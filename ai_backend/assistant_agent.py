@@ -62,6 +62,33 @@ agent = Agent(
 #         "response": response_text.strip()
 #     }
 
+# def run_agent(objective: str, preferred_tool: str = None):
+#     if preferred_tool:
+#         for tool in TOOLS:
+#             if tool.name == preferred_tool:
+#                 return {"tool_used": tool.name, "response": tool.call(objective)}
+#         return {"error": f"Tool '{preferred_tool}' not found."}
+
+#     result: RunResponse = agent.run(objective)
+
+#     tool_used = "AI"
+#     tool_response = ""
+#     final_assistant_response = ""
+
+#     for msg in result.messages:
+#         if msg.role == "tool" and msg.content:
+#             # It's a list containing a string based on your dump
+#             contents = msg.content
+#             tool_response = contents[0] if isinstance(contents, list) else contents
+#         elif msg.role == "assistant" and msg.content:
+#             final_assistant_response = msg.content
+
+#     return {
+#         "tool_used": tool_used,
+#         "response": tool_response or final_assistant_response or ""
+#     }
+    
+    
 def run_agent(objective: str, preferred_tool: str = None):
     if preferred_tool:
         for tool in TOOLS:
@@ -76,8 +103,12 @@ def run_agent(objective: str, preferred_tool: str = None):
     final_assistant_response = ""
 
     for msg in result.messages:
-        if msg.role == "tool" and msg.content:
-            # It's a list containing a string based on your dump
+        if msg.role == "assistant" and msg.tool_calls:
+            # Extract the tool name from the tool_calls dict
+            first_call = msg.tool_calls[0]
+            tool_used = first_call.get("tool_name") or first_call.get("name") or "AI"
+        elif msg.role == "tool" and msg.content:
+            # Tool output message content (list or string)
             contents = msg.content
             tool_response = contents[0] if isinstance(contents, list) else contents
         elif msg.role == "assistant" and msg.content:
@@ -87,3 +118,4 @@ def run_agent(objective: str, preferred_tool: str = None):
         "tool_used": tool_used,
         "response": tool_response or final_assistant_response or ""
     }
+
