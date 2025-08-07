@@ -1,0 +1,13 @@
+prefix=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library
+exec_prefix=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library
+libdir=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library/lib
+sharedlibdir=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library/lib
+includedir=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}
