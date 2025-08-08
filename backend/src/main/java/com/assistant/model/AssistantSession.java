@@ -1,85 +1,69 @@
 package com.assistant.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "assistant_sessions")
 public class AssistantSession {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String objective;
-    
-    @ManyToOne
+
+    private LocalDateTime createdAt;
+
+    // 🔗 One session has many messages
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages;
+
+    // 🔗 Session belongs to a user
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    private LocalDateTime startedAt = LocalDateTime.now();
+    public AssistantSession() {
+        this.createdAt = LocalDateTime.now();
+    }
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    private List<AssistantMessage> messages;
-    
-    @ManyToOne
-    private Project project;
+    // Getters and setters
 
-	public Project getProject() {
-		return project;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setProject(Project project) {
-		this.project = project;
-	}
+    public String getObjective() {
+        return objective;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setObjective(String objective) {
+        this.objective = objective;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-	public String getObjective() {
-		return objective;
-	}
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-	public void setObjective(String objective) {
-		this.objective = objective;
-	}
+    public List<Message> getMessages() {
+        return messages;
+    }
 
-	public User getUser() {
-		return user;
-	}
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public User getUser() {
+        return user;
+    }
 
-	public LocalDateTime getStartedAt() {
-		return startedAt;
-	}
-
-	public void setStartedAt(LocalDateTime startedAt) {
-		this.startedAt = startedAt;
-	}
-
-	public List<AssistantMessage> getMessages() {
-		return messages;
-	}
-
-	public void setMessages(List<AssistantMessage> messages) {
-		this.messages = messages;
-	}
-    
-    
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
-

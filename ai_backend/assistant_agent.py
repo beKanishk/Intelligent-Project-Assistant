@@ -2,8 +2,9 @@
 from agno.agent import Agent, RunResponse
 from tools import github_repo_creator, db_schema_designer
 from agno.models.google import Gemini
+from agno.tools.github import GithubTools
 
-TOOLS = [github_repo_creator, db_schema_designer]
+TOOLS = [db_schema_designer, GithubTools()]
 
 agent = Agent(
     tools=TOOLS,

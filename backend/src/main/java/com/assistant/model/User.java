@@ -1,10 +1,13 @@
 package com.assistant.model;
 
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,8 +21,30 @@ public class User {
     private String name;
     private String password;
     private String role;
+    
+    @OneToMany(mappedBy = "user")
+    private List<AssistantSession> sessions;
 
-    public User() {}
+    @OneToMany(mappedBy = "user")
+    private List<Message> messages;
+
+    public List<AssistantSession> getSessions() {
+		return sessions;
+	}
+
+	public void setSessions(List<AssistantSession> sessions) {
+		this.sessions = sessions;
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
+	}
+
+	public User() {}
 
     public User(String email, String password, String role, String name) {
         this.email = email;

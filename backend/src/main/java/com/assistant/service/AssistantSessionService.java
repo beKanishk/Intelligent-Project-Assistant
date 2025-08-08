@@ -21,19 +21,19 @@ public class AssistantSessionService {
     private final UserRepository userRepository = null;
     private final ProjectRepository projectRepository = null;
 
-    public AssistantSession createSession(AssistantSession session) {
-        Long userId = session.getUser().getId();
-        Long projectId = session.getProject().getId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
-
-        session.setUser(user);
-        session.setProject(project);
-        return assistantSessionRepository.save(session);
-    }
+//    public AssistantSession createSession(AssistantSession session) {
+//        Long userId = session.getUser().getId();
+//        Long projectId = session.getProject().getId();
+//
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+//        Project project = projectRepository.findById(projectId)
+//                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
+//
+//        session.setUser(user);
+//        session.setProject(project);
+//        return assistantSessionRepository.save(session);
+//    }
 
     public List<AssistantSession> getSessionsByProjectId(Long projectId) {
     	Optional<Project> projectOpt = projectRepository.findById(projectId);

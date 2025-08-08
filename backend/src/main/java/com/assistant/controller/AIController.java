@@ -27,7 +27,7 @@ public class AIController {
 	    dto.setPluginUsed(aiResp.tool_used);
 	    dto.setAiResponse(aiResp.response);
 
-	    var entity = assistantMessageService.createMessage(dto.toEntity());
+//	    var entity = assistantMessageService.createMessage();
 	    
 	    
 	    return ResponseEntity.ok(dto);

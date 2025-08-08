@@ -56,33 +56,33 @@ public class AssistantMessageService {
 		return assistantMessageRepository.getReferenceById(id);
 	}
 	
-	public AssistantMessage createMessage(AssistantMessage message) {
-	    String aiUrl = "http://localhost:8001/ai/assist";
-	    
-	    RestTemplate restTemplate = new RestTemplate();
-	    Map<String, Object> reqBody = new HashMap<>();
-	    reqBody.put("message", message.getContent());
-	    
-	    if (message.getPlugin() != null) {
-	        reqBody.put("preferred_tool", message.getPlugin().getName());
-	    }
-
-	    HttpHeaders headers = new HttpHeaders();
-	    headers.setContentType(MediaType.APPLICATION_JSON);
-	    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(reqBody, headers);
-
-	    ResponseEntity<Map> response = restTemplate.postForEntity(aiUrl, entity, Map.class);
-	    Map<String, String> result = response.getBody();
-
-	    message.setContent(result.get("response"));
-	    
-	    // Set plugin (if auto selected by AI)
-	    if (message.getPlugin() == null) {
-	        Plugin plugin = pluginRepository.findByName(result.get("tool_used"));
-	        message.setPlugin(plugin);
-	    }
-
-	    return assistantMessageRepository.save(message);
-	}
+//	public AssistantMessage createMessage(AssistantMessage message) {
+//	    String aiUrl = "http://localhost:8001/ai/assist";
+//	    
+//	    RestTemplate restTemplate = new RestTemplate();
+//	    Map<String, Object> reqBody = new HashMap<>();
+//	    reqBody.put("message", message.getContent());
+//	    
+//	    if (message.getPlugin() != null) {
+//	        reqBody.put("preferred_tool", message.getPlugin().getName());
+//	    }
+//
+//	    HttpHeaders headers = new HttpHeaders();
+//	    headers.setContentType(MediaType.APPLICATION_JSON);
+//	    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(reqBody, headers);
+//
+//	    ResponseEntity<Map> response = restTemplate.postForEntity(aiUrl, entity, Map.class);
+//	    Map<String, String> result = response.getBody();
+//
+//	    message.setContent(result.get("response"));
+//	    
+//	    // Set plugin (if auto selected by AI)
+//	    if (message.getPlugin() == null) {
+//	        Plugin plugin = pluginRepository.findByName(result.get("tool_used"));
+//	        message.setPlugin(plugin);
+//	    }
+//
+//	    return assistantMessageRepository.save(message);
+//	}
 
 }
