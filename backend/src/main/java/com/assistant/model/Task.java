@@ -27,13 +27,13 @@ public class Task {
     private Task parentTask;
     
     @ManyToOne
-    private AssistantSession session;
+    private Session session;
 
-    public AssistantSession getSession() {
+    public Session getSession() {
 		return session;
 	}
 
-	public void setSession(AssistantSession session) {
+	public void setSession(Session session) {
 		this.session = session;
 	}
 

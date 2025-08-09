@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.assistant.dto.MessageRequest;
-import com.assistant.model.AssistantSession;
 import com.assistant.model.Message;
+import com.assistant.model.Session;
 import com.assistant.model.User;
-import com.assistant.repository.AssistantSessionRepository;
 import com.assistant.repository.MessageRepository;
+import com.assistant.repository.SessionRepository;
 
 @Service
 public class MessageService {
@@ -20,21 +20,27 @@ public class MessageService {
 	private MessageRepository messageRepository;
 	
 	@Autowired
-	private AssistantSessionRepository assistantSessionRepository;
+	private SessionRepository sessionRepository;
 	
 	@Autowired
 	private UserService userService;
 	
 	public void handleIncomingMessage(MessageRequest request, String jwt) {
-		Optional<AssistantSession> session = assistantSessionRepository.findById(request.getSessionId());
+		Optional<Session> session = sessionRepository.findById(request.getSessionId());
 		User user = userService.findUserByJwt(jwt);
 		
-		Message msg = new Message(request.getRole(), request.getContent(), request.getTools(), LocalDateTime.now(), session.get(), user);
+		Message msg = new Message(request.getRole(), 
+				request.getContent(), 
+				request.getTools(), 
+				LocalDateTime.now(), 
+				session.get(), 
+				user);
+		
 		messageRepository.save(msg);
 	}
 	
 	public List<Message> getMessage(Long sessionId, String jwt) {
-		Optional<AssistantSession> session = assistantSessionRepository.findById(sessionId);
+		Optional<Session> session = sessionRepository.findById(sessionId);
 		User user = userService.findUserByJwt(jwt);
 		
 		List<Message> msg = messageRepository.findBySessionAndUser(session.get(), user);

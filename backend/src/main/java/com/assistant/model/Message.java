@@ -29,7 +29,7 @@ public class Message {
 //    private String toolOutput;
 
     public Message(String role, String content, List<String> tools, 
-			LocalDateTime timestamp, AssistantSession session, User user) {
+			LocalDateTime timestamp, Session session, User user) {
 		super();
 		this.role = role;
 		this.content = content;
@@ -50,7 +50,7 @@ public class Message {
     // 🔗 Session association (many messages per session)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id")
-    private AssistantSession session;
+    private Session session;
 
     // 🔗 User association (message belongs to a user)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -109,11 +109,11 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    public AssistantSession getSession() {
+    public Session getSession() {
         return session;
     }
 
-    public void setSession(AssistantSession session) {
+    public void setSession(Session session) {
         this.session = session;
     }
 

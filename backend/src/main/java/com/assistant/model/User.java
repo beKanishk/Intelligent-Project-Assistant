@@ -23,16 +23,16 @@ public class User {
     private String role;
     
     @OneToMany(mappedBy = "user")
-    private List<AssistantSession> sessions;
+    private List<Session> sessions;
 
     @OneToMany(mappedBy = "user")
     private List<Message> messages;
 
-    public List<AssistantSession> getSessions() {
+    public List<Session> getSessions() {
 		return sessions;
 	}
 
-	public void setSessions(List<AssistantSession> sessions) {
+	public void setSessions(List<Session> sessions) {
 		this.sessions = sessions;
 	}
 

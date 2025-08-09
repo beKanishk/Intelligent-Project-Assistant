@@ -23,7 +23,7 @@ public class AssistantMessage {
     private String content;
 
     @ManyToOne
-    private AssistantSession session;
+    private Session session;
     
     @ManyToOne
     private Plugin plugin;
@@ -66,11 +66,11 @@ public class AssistantMessage {
 		this.content = content;
 	}
 
-	public AssistantSession getSession() {
+	public Session getSession() {
 		return session;
 	}
 
-	public void setSession(AssistantSession session) {
+	public void setSession(Session session) {
 		this.session = session;
 	}
 

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.assistant.model.AssistantMessage;
-import com.assistant.model.AssistantSession;
 import com.assistant.model.Project;
+import com.assistant.model.Session;
 
 public interface AssistantMessageRepository extends JpaRepository<AssistantMessage, Long>{
 
@@ -14,5 +14,5 @@ public interface AssistantMessageRepository extends JpaRepository<AssistantMessa
 	
 	List<AssistantMessage> findByContent(String content);
 	
-	List<AssistantMessage> findBySession(AssistantSession session);
+	List<AssistantMessage> findBySession(Session session);
 }

@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.assistant.model.AssistantMessage;
-import com.assistant.model.AssistantSession;
 import com.assistant.model.Plugin;
+import com.assistant.model.Session;
 import com.assistant.repository.AssistantMessageRepository;
-import com.assistant.repository.AssistantSessionRepository;
 import com.assistant.repository.PluginRepository;
+import com.assistant.repository.SessionRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -26,7 +26,7 @@ import jakarta.persistence.EntityNotFoundException;
 public class AssistantMessageService {
 
     private final AssistantMessageRepository assistantMessageRepository = null;
-    private final AssistantSessionRepository assistantSessionRepository = null;
+    private final SessionRepository sessionRepository = null;
     
     @Autowired
     private PluginRepository pluginRepository;
@@ -41,7 +41,7 @@ public class AssistantMessageService {
 //    }
 
     public List<AssistantMessage> getMessagesBySessionId(Long sessionId) {
-    	Optional<AssistantSession> session = assistantSessionRepository.findById(sessionId);
+    	Optional<Session> session = sessionRepository.findById(sessionId);
         return assistantMessageRepository.findBySession(session.get());
     }
 

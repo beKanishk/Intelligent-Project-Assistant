@@ -10,7 +10,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import com.assistant.dto.AiResponse;
 import com.assistant.dto.MessageRequest;
+import com.assistant.service.AiService;
 import com.assistant.service.MessageService;
 
 @Controller
@@ -18,6 +20,9 @@ public class ChatController {
 
     @Autowired
     private MessageService messageService;
+    
+    @Autowired
+    private AiService aiService;
 
     @MessageMapping("/chat/{sessionId}") 
     @SendTo("/topic/session/{sessionId}") 
@@ -35,14 +40,14 @@ public class ChatController {
         messageService.handleIncomingMessage(message, jwt);
 
         // Call AI agent
-        String aiReply = callAiAgent(message.getContent(), message.getTools());
+        AiResponse aiReply = aiService.callAgent(message);
 
         // Save AI reply
         MessageRequest aiMessage = new MessageRequest();
         aiMessage.setSessionId(sessionId);
         aiMessage.setRole("assistant");
-        aiMessage.setContent(aiReply);
-        aiMessage.setTools(null);
+        aiMessage.setContent(aiReply.getResponse());
+        aiMessage.setTools(aiReply.getTool_used());
         aiMessage.setUserId(message.getUserId());
 
         messageService.handleIncomingMessage(aiMessage, jwt);

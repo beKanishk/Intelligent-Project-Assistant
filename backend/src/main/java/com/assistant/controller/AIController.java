@@ -20,17 +20,17 @@ public class AIController {
 	@Autowired
 	private AssistantMessageService assistantMessageService;
 	
-	@PostMapping("/assistant/message")
-	public ResponseEntity<MessageDto> handleMessage(@RequestBody MessageDto dto) {
-	    var aiResp = aiService.callAgent(dto.getContent(), dto.getPreferredTool());
-
-	    dto.setPluginUsed(aiResp.tool_used);
-	    dto.setAiResponse(aiResp.response);
-
-//	    var entity = assistantMessageService.createMessage();
-	    
-	    
-	    return ResponseEntity.ok(dto);
-	}
+//	@PostMapping("/assistant/message")
+//	public ResponseEntity<MessageDto> handleMessage(@RequestBody MessageDto dto) {
+//	    var aiResp = aiService.callAgent(dto.getContent(), dto.getPreferredTool());
+//
+//	    dto.setPluginUsed(aiResp.tool_used);
+//	    dto.setAiResponse(aiResp.response);
+//
+////	    var entity = assistantMessageService.createMessage();
+//	    
+//	    
+//	    return ResponseEntity.ok(dto);
+//	}
 
 }
