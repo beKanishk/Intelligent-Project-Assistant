@@ -1,4 +1,4 @@
-package com.assistant.controller;
+package com.assistant.dto;
 
 import com.assistant.model.AssistantMessage;
 

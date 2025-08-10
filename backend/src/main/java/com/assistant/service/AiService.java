@@ -38,12 +38,10 @@ public class AiService {
         }
         
         if(msgRequest.getSessionId() == null) {
-        	String session_id = UUID.randomUUID().toString();
-        	req.put("session_id", session_id);
+        	throw new RuntimeException("Session Id is null");
         }
-        else {
-        	req.put("session_id", msgRequest.getSessionId());
-        }
+        
+        req.put("session_id", msgRequest.getSessionId());
         
         
         var response = rest.postForEntity(aiUrl, req, AiResponse.class);
