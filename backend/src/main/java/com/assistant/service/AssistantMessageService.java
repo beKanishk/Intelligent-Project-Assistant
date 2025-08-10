@@ -40,7 +40,7 @@ public class AssistantMessageService {
 //        return assistantMessageRepository.save(message);
 //    }
 
-    public List<AssistantMessage> getMessagesBySessionId(Long sessionId) {
+    public List<AssistantMessage> getMessagesBySessionId(String sessionId) {
     	Optional<Session> session = sessionRepository.findById(sessionId);
         return assistantMessageRepository.findBySession(session.get());
     }

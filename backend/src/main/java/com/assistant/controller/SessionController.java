@@ -33,12 +33,12 @@ public class SessionController {
     }
 
     @GetMapping("/{id}")
-    public Session getSessionById(@PathVariable Long id) {
+    public Session getSessionById(@PathVariable String id) {
         return sessionService.getSessionById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSession(@PathVariable Long id) {
+    public void deleteSession(@PathVariable String id) {
         sessionService.deleteSession(id);
     }
 }

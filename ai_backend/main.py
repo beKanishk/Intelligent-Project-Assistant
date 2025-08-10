@@ -6,9 +6,10 @@ app = FastAPI()
 
 class AssistantRequest(BaseModel):
     message: str
-    preferred_tool: str = None  # Optional
+    preferred_tool: list[str] = None  # Optional
+    session_id: str
 
 @app.post("/assist")
 def ai_assist(req: AssistantRequest):
-    result = run_agent(req.message, req.preferred_tool)
+    result = run_agent(req.message, req.session_id, req.preferred_tool)
     return result

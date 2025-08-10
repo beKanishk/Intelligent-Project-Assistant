@@ -23,6 +23,7 @@ public class AssistantMessage {
     private String content;
 
     @ManyToOne
+    @JoinColumn(name = "session_id", referencedColumnName = "id", columnDefinition = "CHAR(36)")
     private Session session;
     
     @ManyToOne

@@ -19,8 +19,11 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class SessionService {
 
-    private final SessionRepository sessionRepository = null;
-    private final UserRepository userRepository = null;
+	@Autowired
+    private SessionRepository sessionRepository;
+	
+	@Autowired
+    private UserRepository userRepository;
     private final ProjectRepository projectRepository = null;
     
     @Autowired
@@ -39,19 +42,19 @@ public class SessionService {
         return session_id;
     }
 
-    public List<Session> getSessionsByProjectId(Long projectId) {
-    	Optional<Project> projectOpt = projectRepository.findById(projectId);
-    	Project project = projectOpt.get();
-    	
-        return sessionRepository.findByProject(project);
-    }
+//    public List<Session> getSessionsByProjectId(Long projectId) {
+//    	Optional<Project> projectOpt = projectRepository.findById(projectId);
+//    	Project project = projectOpt.get();
+//    	
+//        return sessionRepository.findByProject(project);
+//    }
 
-    public Session getSessionById(Long id) {
+    public Session getSessionById(String id) {
         return sessionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Session not found with ID: " + id));
     }
 
-    public void deleteSession(Long id) {
+    public void deleteSession(String id) {
         if (!sessionRepository.existsById(id)) {
             throw new EntityNotFoundException("Session not found with ID: " + id);
         }

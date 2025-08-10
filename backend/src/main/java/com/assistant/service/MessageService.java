@@ -25,21 +25,21 @@ public class MessageService {
 	@Autowired
 	private UserService userService;
 	
-	public void handleIncomingMessage(MessageRequest request, String jwt) {
+	public void handleIncomingMessage(MessageRequest request, String senderEmail) {
 		Optional<Session> session = sessionRepository.findById(request.getSessionId());
-		User user = userService.findUserByJwt(jwt);
+		Optional<User> user = userService.getUserByEmail(senderEmail);
 		
 		Message msg = new Message(request.getRole(), 
 				request.getContent(), 
 				request.getTools(), 
 				LocalDateTime.now(), 
 				session.get(), 
-				user);
+				user.get());
 		
 		messageRepository.save(msg);
 	}
 	
-	public List<Message> getMessage(Long sessionId, String jwt) {
+	public List<Message> getMessage(String sessionId, String jwt) {
 		Optional<Session> session = sessionRepository.findById(sessionId);
 		User user = userService.findUserByJwt(jwt);
 		

@@ -1,4 +1,4 @@
-prefix=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library 
+prefix=D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv/Library 
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

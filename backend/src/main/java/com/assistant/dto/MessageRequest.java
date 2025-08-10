@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MessageRequest {
 	private String content;
-	private Long sessionId;
+	private String sessionId;
 	private List<String> tools;
 	private Long userId;
 	private String role;
@@ -15,10 +15,10 @@ public class MessageRequest {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public Long getSessionId() {
+	public String getSessionId() {
 		return sessionId;
 	}
-	public void setSessionId(Long sessionId) {
+	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
 	}
 	public List<String> getTools() {

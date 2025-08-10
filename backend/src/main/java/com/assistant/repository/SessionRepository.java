@@ -8,7 +8,6 @@ import com.assistant.model.Project;
 import com.assistant.model.Session;
 import com.assistant.model.User;
 
-public interface SessionRepository extends JpaRepository<Session, Long>{
-	List<Session> findByProject(Project project);
+public interface SessionRepository extends JpaRepository<Session, String>{
 	List<Session> findByUser(User user);
 }

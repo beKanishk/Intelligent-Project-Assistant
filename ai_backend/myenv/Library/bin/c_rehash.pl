@@ -13,7 +13,7 @@
 # and add symbolic links to their hash values.
 
 my $dir = "C:\\Program Files\\Common Files\\ssl";
-my $prefix = "D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv\\Library";
+my $prefix = "D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv\\Library";
 
 my $errorcount = 0;
 my $openssl = $ENV{OPENSSL} || "openssl";

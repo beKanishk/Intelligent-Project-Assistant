@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "assistant_sessions")
+@Table(name = "session")
 public class Session {
 
     @Id
+    @Column(length = 36, columnDefinition = "CHAR(36)")
     private String id;
 
 //    // 🔗 One session has many messages

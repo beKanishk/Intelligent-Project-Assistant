@@ -49,7 +49,7 @@ public class Message {
 
     // 🔗 Session association (many messages per session)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id")
+    @JoinColumn(name = "session_id", referencedColumnName = "id", columnDefinition = "CHAR(36)")
     private Session session;
 
     // 🔗 User association (message belongs to a user)

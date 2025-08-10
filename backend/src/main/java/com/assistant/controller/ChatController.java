@@ -63,7 +63,7 @@ public class ChatController {
     
 //    @MessageMapping("/chat/{sessionId}")
 //    public void sendMessage(
-//            @DestinationVariable Long sessionId,
+//            @DestinationVariable String sessionId,
 //            @Payload MessageRequest messageRequest,
 //            Principal principal
 //    ) {
@@ -101,7 +101,7 @@ public class ChatController {
     
     @PostMapping("/send/{sessionId}")
     public AiResponse sendMessage(
-            @PathVariable Long sessionId,
+            @PathVariable String sessionId,
             @RequestBody MessageRequest messageRequest,
             Principal principal
     ) {

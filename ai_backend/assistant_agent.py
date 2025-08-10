@@ -88,14 +88,11 @@ agent = Agent(
 #         "tool_used": tool_used,
 #         "response": tool_response or final_assistant_response or ""
 #     }
-    
-    
-def run_agent(objective: str, preferred_tool: str = None):
-    if preferred_tool:
-        for tool in TOOLS:
-            if tool.name == preferred_tool:
-                return {"tool_used": tool.name, "response": tool.call(objective)}
-        return {"error": f"Tool '{preferred_tool}' not found."}
+
+def run_agent(objective: str, session_id: str, preferred_tool: list[str] = None):
+    if isinstance(preferred_tool, list) and preferred_tool:
+        objective += "\nTools user want to use: " + ", ".join(preferred_tool)
+        preferred_tool = None  # reset so AI decides normally
 
     result: RunResponse = agent.run(objective)
 
@@ -120,3 +117,33 @@ def run_agent(objective: str, preferred_tool: str = None):
         "response": tool_response or final_assistant_response or ""
     }
 
+def run_agent(objective: str, session_id: str, preferred_tool: list[str] = None):
+    if isinstance(preferred_tool, list) and preferred_tool:
+        objective += "\nTools user want to use: " + ", ".join(preferred_tool)
+        preferred_tool = None  # reset so AI decides normally
+
+    result: RunResponse = agent.run(objective)
+
+    tool_used_list = []
+    tool_response = ""
+    final_assistant_response = ""
+
+    for msg in result.messages:
+        if msg.role == "assistant" and msg.tool_calls:
+            # Collect all tool names if multiple were called
+            first_call = msg.tool_calls[0]
+            tool_used_list.append(first_call.get("tool_name") or first_call.get("name") or "AI")
+        elif msg.role == "tool" and msg.content:
+            contents = msg.content
+            tool_response = contents[0] if isinstance(contents, list) else contents
+        elif msg.role == "assistant" and msg.content:
+            final_assistant_response = msg.content
+
+    # Ensure we always return a list (Java expects List<String>)
+    if not tool_used_list:
+        tool_used_list = ["AI"]
+
+    return {
+        "tool_used": tool_used_list,
+        "response": tool_response or final_assistant_response or ""
+    }

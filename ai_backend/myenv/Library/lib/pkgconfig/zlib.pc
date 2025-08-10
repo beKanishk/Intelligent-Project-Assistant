@@ -1,8 +1,8 @@
-prefix=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library
-exec_prefix=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library
-libdir=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library/lib
-sharedlibdir=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library/lib
-includedir=D:/Spring Project/Intelligent Project Assistant with Plugins/ai_backend/myenv/Library/include
+prefix=D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv/Library
+exec_prefix=D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv/Library
+libdir=D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv/Library/lib
+sharedlibdir=D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv/Library/lib
+includedir=D:/Spring Project/Intelligent Project Assistant/ai_backend/myenv/Library/include
 
 Name: zlib
 Description: zlib compression library
