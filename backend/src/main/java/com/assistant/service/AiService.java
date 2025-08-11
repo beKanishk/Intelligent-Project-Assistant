@@ -32,6 +32,7 @@ public class AiService {
     public AiResponse callAgent(MessageRequest msgRequest) {
         var req = new HashMap<String, Object>();
         req.put("message", msgRequest.getContent());
+        req.put("user_id", String.valueOf(msgRequest.getUserId()));
 
         if (msgRequest.getTools() != null) {
             req.put("preferred_tool", msgRequest.getTools()); // ✅ Only include if non-null

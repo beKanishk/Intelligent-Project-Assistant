@@ -6,3 +6,8 @@ google-generativeai
 agno
 google-genai
 PyGithub
+googlesearch-python
+pycountry
+beautifulsoup4
+duckdb
+pymongo

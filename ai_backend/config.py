@@ -1,16 +1,12 @@
-# # config.py
+import os
+import google.generativeai as genai
 
-# from langchain_google_genai import ChatGoogleGenerativeAI
-# import os
+from dotenv import load_dotenv
+load_dotenv()
 
-# # Ensure you have set your Gemini API Key as an environment variable
-# GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GITHUB_ACCESS_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
 
-# if not GOOGLE_API_KEY:
-#     raise ValueError("Set GOOGLE_API_KEY environment variable")
+genai.configure(api_key=GOOGLE_API_KEY) 
 
-# llm = ChatGoogleGenerativeAI(
-#     model="gemini-pro",
-#     google_api_key=GOOGLE_API_KEY,
-#     temperature=0.3
-# )
+__all__ = ["genai"]

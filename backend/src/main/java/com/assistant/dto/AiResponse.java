@@ -5,6 +5,7 @@ import java.util.List;
 public class AiResponse {
 	private List<String> tool_used;
     private String response;
+    private String content;
     
 	public List<String> getTool_used() {
 		return tool_used;
@@ -17,6 +18,12 @@ public class AiResponse {
 	}
 	public void setResponse(String response) {
 		this.response = response;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
 	}
     
     

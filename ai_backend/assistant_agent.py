@@ -1,10 +1,10 @@
 # assistant_agent.py
 from agno.agent import Agent, RunResponse
-from tools import github_repo_creator, db_schema_designer
 from agno.models.google import Gemini
 from agno.tools.github import GithubTools
+from agents.master_agent import master_agent
 
-TOOLS = [db_schema_designer, GithubTools()]
+TOOLS = [GithubTools(), ]
 
 agent = Agent(
     tools=TOOLS,
@@ -89,41 +89,41 @@ agent = Agent(
 #         "response": tool_response or final_assistant_response or ""
 #     }
 
-def run_agent(objective: str, session_id: str, preferred_tool: list[str] = None):
+# def run_agent(objective: str, session_id: str, preferred_tool: list[str] = None):
+#     if isinstance(preferred_tool, list) and preferred_tool:
+#         objective += "\nTools user want to use: " + ", ".join(preferred_tool)
+#         preferred_tool = None  # reset so AI decides normally
+
+#     result: RunResponse = agent.run(objective)
+
+#     tool_used = "AI"
+#     tool_response = ""
+#     final_assistant_response = ""
+
+#     for msg in result.messages:
+#         if msg.role == "assistant" and msg.tool_calls:
+#             # Extract the tool name from the tool_calls dict
+#             first_call = msg.tool_calls[0]
+#             tool_used = first_call.get("tool_name") or first_call.get("name") or "AI"
+#         elif msg.role == "tool" and msg.content:
+#             # Tool output message content (list or string)
+#             contents = msg.content
+#             tool_response = contents[0] if isinstance(contents, list) else contents
+#         elif msg.role == "assistant" and msg.content:
+#             final_assistant_response = msg.content
+
+#     return {
+#         "tool_used": tool_used,
+#         "response": tool_response or final_assistant_response or ""
+#     }
+
+def run_agent(objective: str, session_id: str, user_id, preferred_tool: list[str] = None):
     if isinstance(preferred_tool, list) and preferred_tool:
-        objective += "\nTools user want to use: " + ", ".join(preferred_tool)
+        objective += "\nTools user want to use: " + ", ".join(preferred_tool) + " (if available)"
         preferred_tool = None  # reset so AI decides normally
 
-    result: RunResponse = agent.run(objective)
-
-    tool_used = "AI"
-    tool_response = ""
-    final_assistant_response = ""
-
-    for msg in result.messages:
-        if msg.role == "assistant" and msg.tool_calls:
-            # Extract the tool name from the tool_calls dict
-            first_call = msg.tool_calls[0]
-            tool_used = first_call.get("tool_name") or first_call.get("name") or "AI"
-        elif msg.role == "tool" and msg.content:
-            # Tool output message content (list or string)
-            contents = msg.content
-            tool_response = contents[0] if isinstance(contents, list) else contents
-        elif msg.role == "assistant" and msg.content:
-            final_assistant_response = msg.content
-
-    return {
-        "tool_used": tool_used,
-        "response": tool_response or final_assistant_response or ""
-    }
-
-def run_agent(objective: str, session_id: str, preferred_tool: list[str] = None):
-    if isinstance(preferred_tool, list) and preferred_tool:
-        objective += "\nTools user want to use: " + ", ".join(preferred_tool)
-        preferred_tool = None  # reset so AI decides normally
-
-    result: RunResponse = agent.run(objective)
-
+    result: RunResponse = master_agent.run(objective, user_id=user_id, session_id=session_id)
+    print(result)
     tool_used_list = []
     tool_response = ""
     final_assistant_response = ""
@@ -145,5 +145,9 @@ def run_agent(objective: str, session_id: str, preferred_tool: list[str] = None)
 
     return {
         "tool_used": tool_used_list,
-        "response": tool_response or final_assistant_response or ""
+        "response": tool_response or final_assistant_response or "",
+        "content": result.content,  # Agent's final response content
+        # Add other serializable fields if needed:
+        # "messages": [{"role": msg.role, "content": msg.content} for msg in result.messages]
     }
+    
