@@ -60,19 +60,19 @@ cd Intelligent-Project-Assistant
 cd ai_backend
 python -m venv myenv
 
-# Activate
-# Windows
+## Activate
+## Windows
 myenv\Scripts\activate
-# macOS/Linux
+## macOS/Linux
 source myenv/bin/activate
 
 pip install -r requirements.txt
 
-# Environment variables
+## Environment variables
 cp .env.example .env
-# Edit .env to set:
-# GOOGLE_API_KEY=your_gemini_api_key
-# MONGODB_URI=mongodb://localhost:27017/intelligent_assistant
+## Edit .env to set:
+## GOOGLE_API_KEY=your_gemini_api_key
+## MONGODB_URI=mongodb://localhost:27017/intelligent_assistant
 
 
 
@@ -101,43 +101,43 @@ Access:
 ## 🎯 API Usage
 
 ### Send Message
-`POST /api/send/{sessionId}`
-{
-"content": "Create a Python script to analyze a CSV file",
-"tools": ["Code Execution"],
-"userId": "1"
-}
+`POST /api/send/{sessionId}`  
+{  
+"content": "Create a Python script to analyze a CSV file",  
+"tools": ["Code Execution"],  
+"userId": "1"  
+}  
 
-**Response (normal):**
-{
-"response": "I'll create a Python script for CSV analysis...",
-"paused": false,
-"tool_used": ["Code Execution"]
-}
+**Response (normal):**  
+{  
+"response": "I'll create a Python script for CSV analysis...",  
+"paused": false,  
+"tool_used": ["Code Execution"]  
+}  
 
-**Response (HITL):**
-{
-"response": "This operation will delete files. Do you want to proceed?",
-"paused": true,
+**Response (HITL):**  
+{  
+"response": "This operation will delete files. Do you want to proceed?",  
+"paused": true,  
 "user_input_required": [
-{
-"field_name": "confirm_deletion",
-"field_type": "bool",
-"description": "Confirm dangerous file deletion",
-"required": true
-}
-],
-"run_id": "run-12345"
-}
+{  
+"field_name": "confirm_deletion",  
+"field_type": "bool",  
+"description": "Confirm dangerous file deletion",  
+"required": true  
+}  
+],  
+"run_id": "run-12345"  
+}  
 
-### Continue Paused Execution
-`POST /api/continue/{sessionId}`
-{
-"runId": "run-12345",
-"userInputs": { "confirm_deletion": true },
-"sessionId": "session-id",
-"userId": "1"
-}
+### Continue Paused Execution  
+`POST /api/continue/{sessionId}`  
+{  
+"runId": "run-12345",  
+"userInputs": { "confirm_deletion": true },  
+"sessionId": "session-id",  
+"userId": "1"  
+}  
 
 ## 🤖 Agents
 - **Code Agent** — Coding tasks, HITL for file/system operations
@@ -146,20 +146,20 @@ Access:
 - **Calculation Agent** — Heavy compute/math tasks
 
 ## 🧪 Testing HITL
-Dangerous:
-{
-"content": "Delete all files in /tmp/important-data",
-"tools": ["Code Execution"],
-"sessionId": "hitl-test",
-"userId": "1"
-}
-Safe:
-{
-"content": "Add two numbers",
-"tools": ["Code Execution"],
-"sessionId": "safe-test",
-"userId": "1"
-}
+Dangerous:  
+{  
+"content": "Delete all files in /tmp/important-data",  
+"tools": ["Code Execution"],  
+"sessionId": "hitl-test",  
+"userId": "1"  
+}  
+Safe:  
+{  
+"content": "Add two numbers",  
+"tools": ["Code Execution"],  
+"sessionId": "safe-test",  
+"userId": "1"  
+}  
 
 ## 📂 Project Structure
 backend/ (Spring Boot)
