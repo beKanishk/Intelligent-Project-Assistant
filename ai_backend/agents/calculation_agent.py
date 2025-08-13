@@ -29,8 +29,6 @@ calculation_agent = Agent(
     role="Performs heavy numerical computations with tool calls.",
     model=Gemini(id="gemini-2.5-flash", api_key=GOOGLE_API_KEY),
     tools=[HeavyCalculationTools(timeout_sec=25.0), calc_tools, reasoning_tools],
-    show_tool_calls=True,
-    markdown=True,
     instructions=[
         "Use the heavy_calc_tools methods for numeric work.",
         "For simple math, use the calc_tools.",
@@ -38,5 +36,8 @@ calculation_agent = Agent(
         "Return concise results; include shape or timing where helpful.",
         "Use reasoning tools to think through complex calculations or multi-step problems.",
     ],
+    show_tool_calls=True,
+    markdown=True,
+    debug_mode=True,
 )
 

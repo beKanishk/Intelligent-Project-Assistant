@@ -11,3 +11,4 @@ pycountry
 beautifulsoup4
 duckdb
 pymongo
+pandas
