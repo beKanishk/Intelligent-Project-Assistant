@@ -8,6 +8,8 @@ public class MessageRequest {
 	private List<String> tools;
 	private Long userId;
 	private String role;
+	private boolean paused;
+	private boolean needsConfirmation;
 	
 	public String getContent() {
 		return content;
@@ -38,6 +40,18 @@ public class MessageRequest {
 	}
 	public void setRole(String role) {
 		this.role = role;
+	}
+	public boolean isPaused() {
+		return paused;
+	}
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+	public boolean isNeedsConfirmation() {
+		return needsConfirmation;
+	}
+	public void setNeedsConfirmation(boolean needsConfirmation) {
+		this.needsConfirmation = needsConfirmation;
 	}
 	
 	
