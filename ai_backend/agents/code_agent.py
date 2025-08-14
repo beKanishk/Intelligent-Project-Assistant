@@ -68,7 +68,7 @@ reasoning_tools = ReasoningTools(
 code_agent = Agent(
     name="code_agent",
     role="Execute code, evaluate expressions, and run short scripts safely with human oversight for dangerous operations.",
-    model=Gemini(id="gemini-2.5-flash", api_key=GOOGLE_API_KEY),
+    model=Gemini(id="gemini-2.5-flash", api_key="AIzaSyCkwjAMFF9ff3dMtXzKc6pivN0Mv7EpiFc"),
     tools=[
         PythonTools(pip_install=False, run_code=True), 
         reasoning_tools, 
