@@ -77,7 +77,7 @@ calc_tools = CalculatorTools(
 calculation_agent = Agent(
     name="calculation_agent",
     role="Performs heavy numerical computations with tool calls, with HITL safety controls.",
-    model=Gemini(id="gemini-2.5-flash", api_key="AIzaSyCkwjAMFF9ff3dMtXzKc6pivN0Mv7EpiFc"),
+    model=Gemini(id="gemini-2.5-flash", api_key=GOOGLE_API_KEY),
     tools=[
         HeavyCalculationTools(timeout_sec=25.0),
         calc_tools,

@@ -31,7 +31,7 @@ duckdb_tools = DuckDbTools(
 data_sql_agent = Agent(
     name="data_sql_agent",
     role="Query data with DuckDB and use Google search for context.",
-    model=Gemini(id="gemini-2.5-flash", api_key="AIzaSyCkwjAMFF9ff3dMtXzKc6pivN0Mv7EpiFc"),
+    model=Gemini(id="gemini-2.5-flash", api_key=GOOGLE_API_KEY),
     tools=[
         duckdb_tools,
         GoogleSearchTools(),

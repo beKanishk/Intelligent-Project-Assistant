@@ -123,7 +123,7 @@ tools_list = [reasoning_tools, user_control_tools]
 
 master_agent = Team(
     members=[data_sql_agent, search_agent, code_agent, calculation_agent],
-    model=Gemini(id="gemini-2.0-flash", api_key="AIzaSyCkwjAMFF9ff3dMtXzKc6pivN0Mv7EpiFc"),
+    model=Gemini(id="gemini-2.0-flash", api_key=GOOGLE_API_KEY),
     mode="coordinate",
     success_criteria="Select the best agent to handle the query",
     storage=mongo_storage,

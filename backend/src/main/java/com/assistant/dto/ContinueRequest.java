@@ -1,8 +1,10 @@
 package com.assistant.dto;
 
+import java.util.Map;
+
 public class ContinueRequest {
     private String runId;
-    private java.util.Map<String, Object> userInputs;
+    private Map<String, Object> userInputs;
     private String sessionId;
     private Long userId;
     
@@ -15,11 +17,11 @@ public class ContinueRequest {
         this.runId = runId;
     }
     
-    public java.util.Map<String, Object> getUserInputs() {
+    public Map<String, Object> getUserInputs() {
         return userInputs;
     }
     
-    public void setUserInputs(java.util.Map<String, Object> userInputs) {
+    public void setUserInputs(Map<String, Object> userInputs) {
         this.userInputs = userInputs;
     }
     

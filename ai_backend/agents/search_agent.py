@@ -58,13 +58,13 @@ from agno.tools.googlesearch import GoogleSearchTools
 from agno.tools.github import GithubTools
 from agno.tools.reasoning import ReasoningTools
 from agno.tools.user_control_flow import UserControlFlowTools
-from config import GITHUB_ACCESS_TOKEN
+from config import GOOGLE_API_KEY
 
 # Configure reasoning tools
 reasoning_tools = ReasoningTools(
     think=True,
     analyze=True,
-    add_instructions=True,
+    add_instructions=False,
     add_few_shot=False,
 )
 
@@ -72,7 +72,7 @@ reasoning_tools = ReasoningTools(
 search_agent = Agent(
     name="search_agent",
     role="Browse the web, search, and retrieve online content safely.",
-    model=Gemini(id="gemini-2.0-flash", api_key="AIzaSyCkwjAMFF9ff3dMtXzKc6pivN0Mv7EpiFc"),  # or use gemini-2.5-pro if available
+    model=Gemini(id="gemini-2.0-flash", api_key=GOOGLE_API_KEY),  # or use gemini-2.5-pro if available
     tools=[
         WebBrowserTools(),       # Headless navigation and site interaction
         GoogleSearchTools(),     # General web search

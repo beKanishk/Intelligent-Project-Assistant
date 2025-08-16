@@ -9,4 +9,4 @@ GITHUB_ACCESS_TOKEN = os.getenv("GITHUB_ACCESS_TOKEN")
 
 genai.configure(api_key=GOOGLE_API_KEY) 
 
-__all__ = ["genai"]
+__all__ = ["genai", "GOOGLE_API_KEY"]
