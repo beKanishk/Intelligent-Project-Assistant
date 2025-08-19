@@ -3,6 +3,9 @@ package com.assistant.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,10 +22,13 @@ public class User {
 	
     private String email;
     private String name;
+    
+    @JsonIgnore
     private String password;
     private String role;
     
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Session> sessions;
 
     @OneToMany(mappedBy = "user")

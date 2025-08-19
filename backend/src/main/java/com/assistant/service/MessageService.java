@@ -46,4 +46,12 @@ public class MessageService {
 		List<Message> msg = messageRepository.findBySessionAndUser(session.get(), user);
 		return msg;
 	}
+	
+	public List<Message> getMessageByEmail(String sessionId, String email) {
+		Optional<Session> session = sessionRepository.findById(sessionId);
+		Optional<User> user = userService.getUserByEmail(email);
+		
+		List<Message> msg = messageRepository.findBySessionAndUser(session.get(), user.get());
+		return msg;
+	}
 }
