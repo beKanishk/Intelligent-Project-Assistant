@@ -1,0 +1,46 @@
+src/
+├── components/
+│   ├── layout/
+│   │   ├── App.jsx
+│   │   ├── Header.jsx
+│   │   ├── Sidebar.jsx
+│   │   ├── MainLayout.jsx
+│   │   └── UserMenu.jsx
+│   ├── chat/
+│   │   ├── ChatWindow.jsx
+│   │   ├── ChatArea.jsx
+│   │   ├── MessageList.jsx
+│   │   ├── MessageBubble.jsx
+│   │   ├── InputArea.jsx
+│   │   └── DynamicInputForm.jsx
+│   ├── sidebar/
+│   │   ├── ChatHistory.jsx
+│   │   ├── ChatHistoryItem.jsx
+│   │   ├── NewChatButton.jsx
+│   │   └── UserProfile.jsx
+│   ├── auth/
+│   │   ├── SignInModal.jsx
+│   │   ├── SignUpModal.jsx
+│   │   ├── LoginForm.jsx
+│   │   └── RegisterForm.jsx
+│   └── common/
+│       ├── Button.jsx
+│       ├── Modal.jsx
+│       ├── LoadingSpinner.jsx
+│       └── ToolSelector.jsx
+├── pages/
+│   ├── HomePage.jsx
+│   ├── ChatPage.jsx
+│   └── AuthPage.jsx
+├── redux/
+│   ├── authentication/
+│   ├── session/
+│   ├── message/
+│   └── store.js
+├── services/
+│   ├── api.js
+│   └── agentService.js
+└── styles/
+    ├── globals.css
+    ├── components.css
+    └── chat.css
