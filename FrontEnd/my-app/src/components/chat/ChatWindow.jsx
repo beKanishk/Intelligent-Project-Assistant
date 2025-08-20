@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { List, Empty, Spin } from 'antd';
 import MessageBubble from './MessageBubble';
 
-const ChatWindow = () => {
+const ChatWindow = ({ sessionId, userId }) => {
   const { messages, loading, messagesLoading } = useSelector(state => state.message);
   const messagesEndRef = useRef(null);
 

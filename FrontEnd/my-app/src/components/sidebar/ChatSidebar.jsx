@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Layout, Menu, Button, Typography, Avatar, Dropdown } from 'antd';
 import { 
@@ -11,7 +11,13 @@ import {
 } from '@ant-design/icons';
 import { createSession, loadSessionHistory, setSessionData } from '@/reduxStore/session/Action';
 import { logout } from '@/reduxStore/auth/Action';
-import { clearMessages, loadMessages } from '@/reduxStore/message/Action';
+import { 
+  clearMessages, 
+  loadMessages, 
+  subscribeToSession, 
+  disconnectWebSocket,
+  connectWebSocket 
+} from '@/reduxStore/message/Action';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -20,6 +26,9 @@ const ChatSidebar = ({ collapsed, onCollapse }) => {
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth);
   const { history, sessionId } = useSelector(state => state.session);
+  
+  // Local state to control menu selection
+  const [selectedKey, setSelectedKey] = useState(null);
 
   // Load user's session history when component mounts
   useEffect(() => {
@@ -28,22 +37,57 @@ const ChatSidebar = ({ collapsed, onCollapse }) => {
     }
   }, [dispatch, user?.id]);
 
-  const handleNewChat = () => {
-    dispatch(clearMessages());
-    dispatch(createSession());
+  // Initialize WebSocket connection when component mounts
+  useEffect(() => {
+    dispatch(connectWebSocket());
+    
+    return () => {
+      dispatch(disconnectWebSocket());
+    };
+  }, [dispatch]);
+
+  // Sync selectedKey with sessionId from Redux
+  useEffect(() => {
+    if (sessionId) {
+      setSelectedKey(sessionId.toString());
+    }
+  }, [sessionId]);
+
+  // Safe date formatting function
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'Unknown Date';
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? 'Unknown Date' : date.toLocaleDateString();
   };
 
-  const handleSessionClick = (session) => {
-    // Switch to selected session
+  const handleNewChat = () => {
     dispatch(clearMessages());
-    dispatch(setSessionData(session));
-    localStorage.setItem("sessionId", session.id);
+    dispatch(createSession()).then((newSession) => {
+      if (newSession?.id) {
+        dispatch(subscribeToSession(newSession.id));
+        setSelectedKey(newSession.id.toString());
+      }
+    });
+  };
+
+  const handleMenuClick = (e) => {
+    const clickedSessionId = e.key;
+    setSelectedKey(clickedSessionId);
     
-    // Load messages for this session
-    dispatch(loadMessages(session.id));
+    // Find the session object by ID
+    const session = history.find(s => s.id.toString() === clickedSessionId);
+    
+    if (session) {
+      dispatch(clearMessages());
+      dispatch(setSessionData(session));
+      localStorage.setItem("sessionId", session.id);
+      dispatch(loadMessages(session.id));
+      dispatch(subscribeToSession(session.id));
+    }
   };
 
   const handleLogout = () => {
+    dispatch(disconnectWebSocket());
     dispatch(logout());
   };
 
@@ -106,11 +150,14 @@ const ChatSidebar = ({ collapsed, onCollapse }) => {
             <Menu
               mode="inline"
               style={{ border: 'none' }}
-              selectedKeys={[sessionId?.toString()]}
-              items={history.map((session, index) => ({
-                key: session.id?.toString(),
-                icon: <MessageOutlined />,
-                label: (
+              selectedKeys={selectedKey ? [selectedKey] : []}
+              onClick={handleMenuClick}
+            >
+              {history.map((session, index) => (
+                <Menu.Item 
+                  key={session.id.toString()}
+                  icon={<MessageOutlined />}
+                >
                   <div style={{ 
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -120,13 +167,12 @@ const ChatSidebar = ({ collapsed, onCollapse }) => {
                       {session.title || `Session ${session.id}`}
                     </Text>
                     <Text type="secondary" style={{ fontSize: '12px' }}>
-                      {new Date(session.createdAt || session.timestamp).toLocaleDateString()}
+                      {formatDate(session.createdAt || session.timestamp)}
                     </Text>
                   </div>
-                ),
-                onClick: () => handleSessionClick(session)
-              }))}
-            />
+                </Menu.Item>
+              ))}
+            </Menu>
           ) : (
             <div style={{ 
               padding: '20px', 
