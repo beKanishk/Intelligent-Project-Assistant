@@ -76,6 +76,7 @@ const ChatSidebar = ({ collapsed, onCollapse }) => {
     
     // Find the session object by ID
     const session = history.find(s => s.id.toString() === clickedSessionId);
+    console.log("Session clicked:", session);
     
     if (session) {
       dispatch(clearMessages());

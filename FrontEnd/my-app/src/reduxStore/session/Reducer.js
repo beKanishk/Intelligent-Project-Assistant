@@ -27,7 +27,7 @@ const sessionReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                sessionId: action.payload.sessionId,
+                sessionId: action.payload.id,
                 sessionData: action.payload,
                 isActive: true,
                 error: null
@@ -36,7 +36,7 @@ const sessionReducer = (state = initialState, action) => {
         case SET_SESSION_ID:
             return {
                 ...state,
-                sessionId: action.payload,
+                sessionId: action.payload.id,
                 isActive: true
             };
 
@@ -49,10 +49,14 @@ const sessionReducer = (state = initialState, action) => {
             };
 
         case SET_SESSION_DATA:
+            console.log('🔍 SET_SESSION_DATA - payload:', action.payload);
             return {
                 ...state,
-                sessionData: { ...state.sessionData, ...action.payload }
+                sessionId: action.payload.id,  // ✅ Add this line!
+                sessionData: action.payload,   // ✅ Replace entire sessionData, don't merge
+                isActive: true                 // ✅ Set active state
             };
+
 
         case UPDATE_SESSION_DATA:
             return {

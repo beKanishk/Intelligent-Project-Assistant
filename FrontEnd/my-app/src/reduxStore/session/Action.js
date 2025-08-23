@@ -86,10 +86,19 @@ export const clearSession = () => (dispatch) => {
     dispatch({ type: CLEAR_SESSION });
 };
 
-export const setSessionData = (data) => (dispatch) => {
-    dispatch({ type: SET_SESSION_DATA, payload: data });
+export const setSessionData = (sessionData) => (dispatch) => {
+    console.log('🔍 setSessionData action - session:', sessionData);
+    
+    // Update localStorage
+    localStorage.setItem("sessionId", sessionData.id);
+    
+    dispatch({
+        type: SET_SESSION_DATA,
+        payload: sessionData  // Pass the complete session object
+    });
 };
 
 export const updateSessionData = (data) => (dispatch) => {
+    console.log('Updating session data:', data);
     dispatch({ type: UPDATE_SESSION_DATA, payload: data });
 };

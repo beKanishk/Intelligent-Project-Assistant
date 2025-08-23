@@ -1,97 +1,129 @@
 import React from 'react';
-import { Avatar, Typography, Space, Tag, Alert } from 'antd';
-import { UserOutlined, RobotOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import ReactMarkdown from 'react-markdown';
+import { Avatar, Typography, Tag, Space, Tooltip } from 'antd';
+import { UserOutlined, RobotOutlined, ToolOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 
 const MessageBubble = ({ message }) => {
-  const isUser = message.type === 'user';
-  const isError = message.error || message.type === 'error';
+  const isUser = message.role === 'user' || message.type === 'user';
+  const isAssistant = message.role === 'assistant' || message.type === 'assistant' || message.type === 'agent';
+  const isTool = message.role === 'tool' || message.type === 'tool';
+  
+  // ✅ Check if this message has user input requirements
+  const hasUserInputFields = message.paused && message.userInputRequired && message.userInputFields?.length > 0;
+
+  // Format timestamp
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return '';
+    
+    const date = new Date(timestamp);
+    if (isNaN(date.getTime())) {
+      const localDateTimeRegex = /(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/;
+      const match = timestamp.match(localDateTimeRegex);
+      if (match) {
+        return new Date(`${match[1]}T${match[2]}`).toLocaleString();
+      }
+      return 'Unknown time';
+    }
+    
+    return date.toLocaleString();
+  };
 
   return (
     <div style={{
-      width: '100%',
       display: 'flex',
-      justifyContent: isUser ? 'flex-end' : 'flex-start',
-      marginBottom: '16px'
+      flexDirection: 'column',
+      alignItems: isUser ? 'flex-end' : 'flex-start',
+      marginBottom: '16px',
+      width: '100%'
     }}>
+      {/* Role and timestamp header */}
       <div style={{
-        maxWidth: '70%',
         display: 'flex',
-        flexDirection: isUser ? 'row-reverse' : 'row',
-        gap: '12px'
+        alignItems: 'center',
+        marginBottom: '4px',
+        flexDirection: isUser ? 'row-reverse' : 'row'
       }}>
-        {/* Avatar */}
-        <Avatar
-          size={32}
+        <Avatar 
+          size="small"
           icon={isUser ? <UserOutlined /> : <RobotOutlined />}
-          style={{
-            backgroundColor: isUser ? '#52c41a' : '#1890ff',
-            flexShrink: 0
+          style={{ 
+            backgroundColor: isUser ? '#1890ff' : '#722ed1',
+            marginLeft: isUser ? '8px' : '0',
+            marginRight: isUser ? '0' : '8px'
           }}
         />
+        <Text 
+          style={{ 
+            fontSize: '12px',
+            color: '#666'
+          }}
+        >
+          {isUser ? 'You' : 'Assistant'}
+        </Text>
+        {message.timestamp && (
+          <Text 
+            style={{ 
+              fontSize: '10px',
+              color: '#999',
+              marginLeft: '8px'
+            }}
+          >
+            {new Date(message.timestamp).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </Text>
+        )}
+      </div>
 
-        {/* Message Content */}
-        <div style={{
-          backgroundColor: isError ? '#fff2f0' : (isUser ? '#e6f7ff' : '#f6ffed'),
-          border: `1px solid ${isError ? '#ffccc7' : (isUser ? '#91d5ff' : '#b7eb8f')}`,
-          borderRadius: '12px',
-          padding: '12px 16px',
-          position: 'relative'
-        }}>
-          {/* Message Status */}
-          {message.paused && (
-            <Alert
-              message="AI is waiting for your input"
-              type="info"
-              size="small"
-              style={{ marginBottom: '8px' }}
-            />
-          )}
+      {/* Message bubble */}
+      <div style={{
+        maxWidth: '70%',
+        padding: '12px 16px',
+        borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+        backgroundColor: isUser ? '#1890ff' : '#f5f5f5',
+        color: isUser ? 'white' : 'black',
+        wordWrap: 'break-word',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+      }}>
+        {/* ✅ Always show message content */}
+        <Paragraph 
+          style={{ 
+            margin: 0,
+            color: isUser ? 'white' : 'black',
+            whiteSpace: 'pre-wrap'
+          }}
+        >
+          {message.content}
+        </Paragraph>
 
-          {isError && (
-            <Alert
-              message="Error occurred"
-              type="error"
-              size="small"
-              style={{ marginBottom: '8px' }}
-              icon={<ExclamationCircleOutlined />}
-            />
-          )}
-
-          {/* Message Text */}
-          <div style={{ wordBreak: 'break-word' }}>
-            {isUser ? (
-              <Text>{message.content}</Text>
-            ) : (
-              <ReactMarkdown>{message.content || 'No response'}</ReactMarkdown>
-            )}
+        {/* Tools used */}
+        {message.tools && message.tools.length > 0 && (
+          <div style={{ marginTop: '8px' }}>
+            <Space wrap>
+              {message.tools.map((tool, index) => (
+                <Tag 
+                  key={index}
+                  color={isUser ? 'blue' : 'green'}
+                  size="small"
+                >
+                  <ToolOutlined style={{ marginRight: '4px' }} />
+                  {tool}
+                </Tag>
+              ))}
+            </Space>
           </div>
+        )}
 
-          {/* Tools Used */}
-          {message.toolUsed && message.toolUsed.length > 0 && (
-            <div style={{ marginTop: '8px' }}>
-              <Space wrap>
-                {message.toolUsed.map((tool, index) => (
-                  <Tag key={index} size="small" color="blue">
-                    {tool}
-                  </Tag>
-                ))}
-              </Space>
-            </div>
-          )}
-
-          {/* Timestamp */}
-          <div style={{ 
-            marginTop: '8px',
-            textAlign: isUser ? 'right' : 'left'
-          }}>
-            <Text type="secondary" style={{ fontSize: '11px' }}>
-              {new Date(message.timestamp).toLocaleTimeString()}
-            </Text>
+        {/* ✅ Show user input indicator if this message requires input */}
+        {hasUserInputFields && (
+          <div style={{ marginTop: '12px' }}>
+            <Tag color="orange" icon={<ExclamationCircleOutlined />}>
+              User Input Required
+            </Tag>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -7,7 +7,8 @@ import {
     ADD_MESSAGE, CLEAR_MESSAGES,
     LOAD_MESSAGES_REQUEST, LOAD_MESSAGES_SUCCESS, LOAD_MESSAGES_FAILURE,
     SET_USER_INPUT_FIELDS, CLEAR_USER_INPUT_FIELDS, SET_WAITING_FOR_INPUT,
-    WEBSOCKET_CONNECTED, WEBSOCKET_DISCONNECTED, WEBSOCKET_ERROR
+    WEBSOCKET_CONNECTED, WEBSOCKET_DISCONNECTED, WEBSOCKET_ERROR,
+    SET_AI_PROCESSING
 } from "./ActionType";
 
 const baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -54,34 +55,53 @@ export const connectWebSocket = () => (dispatch, getState) => {
 let currentSubscription = null;
 
 export const subscribeToSession = (sessionId) => (dispatch) => {
-    if (!stompClient || !stompClient.connected) {
-        console.log('STOMP client not connected, attempting to connect...');
-        dispatch(connectWebSocket());
-        setTimeout(() => {
-            dispatch(subscribeToSession(sessionId));
-        }, 1000);
-        return;
-    }
+    // ... existing connection logic ...
 
-    // Unsubscribe from previous session if exists
-    if (currentSubscription) {
-        console.log('Unsubscribing from previous session');
-        currentSubscription.unsubscribe();
-    }
-
-    console.log(`Subscribing to session: ${sessionId}`);
     currentSubscription = stompClient.subscribe(`/user/queue/session/${sessionId}`, (message) => {
         const messageData = JSON.parse(message.body);
         console.log('Received WebSocket message:', messageData);
+        console.log('🔥 user_input_fields:', messageData.user_input_fields);
+        console.log('🔥 paused:', messageData.paused);
+        console.log('🔥 user_input_required:', messageData.user_input_required);
         
         dispatch({ type: ADD_MESSAGE, payload: messageData });
-        
-        if (messageData.user_input_required && messageData.user_input_fields) {
-            dispatch({ type: SET_USER_INPUT_FIELDS, payload: messageData.user_input_fields });
+
+        // ✅ Handle HITL with proper field names and skip metadata field
+        if (messageData.paused && messageData.user_input_required && messageData.user_input_fields) {
+            console.log('🔥 Processing user input fields...');
+            
+            // ✅ Skip the first field (index 0) and normalize the rest
+            const actualFields = messageData.user_input_fields.slice(1); // Skip metadata field
+            
+            const normalizedFields = actualFields.map(field => {
+                console.log('🔍 Processing field:', field);
+                return {
+                    fieldName: field.field_name,
+                    fieldDescription: field.field_description || field.field_name, // fallback
+                    fieldType: field.field_type,
+                    required: field.required || false,
+                    defaultValue: field.default_value || '',
+                    options: field.options || [],
+                    minLength: field.min_length,
+                    maxLength: field.max_length,
+                    minValue: field.min_value,
+                    maxValue: field.max_value,
+                    pattern: field.pattern,
+                    placeholder: field.placeholder || '',
+                };
+            });
+            
+            console.log('🔥 Normalized fields:', normalizedFields);
+            dispatch({ type: SET_USER_INPUT_FIELDS, payload: normalizedFields });
             dispatch({ type: SET_WAITING_FOR_INPUT, payload: true });
+        } else if (messageData.needsConfirmation) {
+            console.log('Agent requesting confirmation');
         }
     });
 };
+
+
+
 
 
 
@@ -106,24 +126,34 @@ export const sendMessage = (messageData) => async (dispatch, getState) => {
     }
 
     try {
-        // Add user message first
-        const userMessage = {
-            id: Date.now() + '_user',
-            type: 'user',
-            content: messageData.content,
-            timestamp: new Date().toISOString(),
-            sessionId: session.sessionId
-        };
-        dispatch({ type: ADD_MESSAGE, payload: userMessage });
+        // // Add user message first (for immediate UI feedback)
+        // const userMessage = {
+        //     id: Date.now() + '_user',
+        //     type: 'user',
+        //     content: messageData.content,
+        //     timestamp: new Date().toISOString(),
+        //     sessionId: session.sessionId,
+        //     role: 'user'
+        // };
+        // dispatch({ type: ADD_MESSAGE, payload: userMessage });
 
-        // Send via WebSocket only
+        // Construct MessageRequest exactly as your backend expects
+        const backendMessage = {
+            content: messageData.content,
+            sessionId: session.sessionId,
+            tools: messageData.tools || [], // List<String>
+            userId: auth.user?.id, // Long
+            role: 'user', // String
+            paused: false, // boolean
+            needsConfirmation: false // boolean
+        };
+
+        console.log('Sending message:', backendMessage);
+
+        // Send via WebSocket to your backend endpoint
         stompClient.publish({
             destination: `/app/chat/${session.sessionId}`,
-            body: JSON.stringify({
-                content: messageData.content,
-                userId: auth.user?.id,
-                tools: messageData.tools || []
-            })
+            body: JSON.stringify(backendMessage)
         });
 
         dispatch({ type: SEND_MESSAGE_SUCCESS });
@@ -133,6 +163,8 @@ export const sendMessage = (messageData) => async (dispatch, getState) => {
         dispatch({ type: SEND_MESSAGE_FAILURE, payload: error.message });
     }
 };
+
+
 
 export const continueAgent = (userInputs, runId) => async (dispatch, getState) => {
     dispatch({ type: CONTINUE_AGENT_REQUEST });
@@ -145,15 +177,25 @@ export const continueAgent = (userInputs, runId) => async (dispatch, getState) =
         return;
     }
 
+    // ✅ Validate runId
+    if (!runId || runId === null || runId === undefined) {
+        console.error('Continue Agent Error: Invalid runId:', runId);
+        dispatch({ type: CONTINUE_AGENT_FAILURE, payload: 'Invalid run ID. Please try again.' });
+        return;
+    }
+
+    // Construct ContinueRequest payload according to your backend
     const payload = {
-        runId: runId,
+        runId: runId.toString(), // ✅ Ensure it's a string
         sessionId: session.sessionId,
         userId: auth.user?.id,
-        userInputs: userInputs
+        userInputs: userInputs // This matches your ContinueRequest structure
     };
 
+    console.log('🔍 Continue agent payload:', payload); // Debug log
+
     try {
-        // Send via WebSocket only
+        // Send via WebSocket
         stompClient.publish({
             destination: `/app/continue/${session.sessionId}`,
             body: JSON.stringify(payload)
@@ -169,6 +211,8 @@ export const continueAgent = (userInputs, runId) => async (dispatch, getState) =
     }
 };
 
+
+
 export const addMessage = (message) => ({
     type: ADD_MESSAGE,
     payload: message
@@ -180,16 +224,29 @@ export const loadMessages = (sessionId) => async (dispatch, getState) => {
     const { auth } = getState();
 
     try {
-        // REST API only for loading historical messages
+        // REST API call to load historical messages
         const response = await axios.get(`${baseURL}/api/message/history/${sessionId}`, {
             headers: { Authorization: `Bearer ${auth.token}` }
         });
 
         const messages = response.data;
-        console.log('Loaded messages:', messages);
+        console.log('Loaded messages from backend:', messages);
 
-        dispatch({ type: LOAD_MESSAGES_SUCCESS, payload: messages });
-        return { success: true, messages };
+        // Transform backend Message entities to frontend message format
+        const transformedMessages = messages.map(backendMessage => ({
+            id: backendMessage.id, // Long from backend
+            type: backendMessage.role, // 'user', 'assistant', 'tool'
+            content: backendMessage.content,
+            tools: backendMessage.tools || [], // List<String> from backend
+            timestamp: backendMessage.timestamp, // LocalDateTime from backend
+            sessionId: sessionId,
+            role: backendMessage.role,
+            // Add any additional frontend-specific fields if needed
+            userId: backendMessage.user?.id
+        }));
+
+        dispatch({ type: LOAD_MESSAGES_SUCCESS, payload: transformedMessages });
+        return { success: true, messages: transformedMessages };
     } catch (error) {
         console.error("Load Messages Error:", error.response?.data || error.message);
         dispatch({ 
@@ -199,6 +256,7 @@ export const loadMessages = (sessionId) => async (dispatch, getState) => {
         return { success: false, error: error.response?.data?.message };
     }
 };
+
 
 export const clearMessages = () => (dispatch) => {
     dispatch({ type: CLEAR_MESSAGES });

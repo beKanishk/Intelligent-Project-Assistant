@@ -19,6 +19,13 @@ const ChatPage = () => {
   const { waitingForInput, userInputFields } = useSelector(state => state.message);
   const { user } = useSelector(state => state.auth);
 
+  // ✅ Debug logging (remove in production)
+  console.log('🔍 ChatPage render:');
+  console.log('  - waitingForInput:', waitingForInput);
+  console.log('  - userInputFields:', userInputFields);
+  console.log('  - userInputFields.length:', userInputFields?.length);
+  console.log('  - Should show form?', waitingForInput && userInputFields?.length > 0);
+
   useEffect(() => {
     // Initialize session when component mounts
     if (!sessionId) {

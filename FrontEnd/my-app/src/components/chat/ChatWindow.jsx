@@ -2,9 +2,16 @@ import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { List, Empty, Spin } from 'antd';
 import MessageBubble from './MessageBubble';
+import AILoadingIndicator from './AILoadingIndicator'; // Choose one
+// import SimpleLoadingIndicator from './SimpleLoadingIndicator'; // Or this one
 
 const ChatWindow = ({ sessionId, userId }) => {
-  const { messages, loading, messagesLoading } = useSelector(state => state.message);
+  const { 
+    messages, 
+    loading, 
+    messagesLoading, 
+    aiProcessing 
+  } = useSelector(state => state.message);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -13,7 +20,7 @@ const ChatWindow = ({ sessionId, userId }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, aiProcessing]); // Scroll when processing state changes
 
   if (messagesLoading) {
     return (
@@ -28,7 +35,7 @@ const ChatWindow = ({ sessionId, userId }) => {
     );
   }
 
-  if (messages.length === 0 && !loading) {
+  if (messages.length === 0 && !loading && !aiProcessing) {
     return (
       <div style={{ 
         height: '100%',
@@ -59,11 +66,8 @@ const ChatWindow = ({ sessionId, userId }) => {
         )}
       />
       
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <Spin size="small" />
-        </div>
-      )}
+      {/* ✅ Show loading indicator when AI is processing */}
+      {aiProcessing && <AILoadingIndicator />}
       
       <div ref={messagesEndRef} />
     </div>
