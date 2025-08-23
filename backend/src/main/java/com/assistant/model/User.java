@@ -32,6 +32,7 @@ public class User {
     private List<Session> sessions;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Message> messages;
 
     public List<Session> getSessions() {

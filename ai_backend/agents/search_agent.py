@@ -74,10 +74,10 @@ search_agent = Agent(
     role="Browse the web, search, and retrieve online content safely.",
     model=Gemini(id="gemini-2.0-flash", api_key=GOOGLE_API_KEY),  # or use gemini-2.5-pro if available
     tools=[
-        WebBrowserTools(),       # Headless navigation and site interaction
+        # WebBrowserTools(),       # Headless navigation and site interaction
         GoogleSearchTools(),     # General web search
         GithubTools(),           # Search GitHub repos, issues, and code
-        WebsiteTools(),          # Fetch & parse website content (structured)
+        # WebsiteTools(),          # Fetch & parse website content (structured)
         UserControlFlowTools(),  # Human-in-the-Loop safety & confirmations
         reasoning_tools
     ],
