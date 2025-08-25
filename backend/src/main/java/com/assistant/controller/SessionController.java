@@ -39,6 +39,7 @@ public class SessionController {
 
     @DeleteMapping("/{id}")
     public void deleteSession(@PathVariable String id) {
+    	System.out.println("delete called" + id);
         sessionService.deleteSession(id);
     }
 }

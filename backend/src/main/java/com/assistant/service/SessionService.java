@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import com.assistant.model.Session;
 import com.assistant.model.Project;
 import com.assistant.model.User;
+import com.assistant.repository.MessageRepository;
 import com.assistant.repository.ProjectRepository;
 import com.assistant.repository.SessionRepository;
 import com.assistant.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 @Service
 public class SessionService {
@@ -24,7 +26,9 @@ public class SessionService {
 	
 	@Autowired
     private UserRepository userRepository;
-    private final ProjectRepository projectRepository = null;
+    
+	@Autowired
+	private MessageRepository messageRepository;
     
     @Autowired
     private UserService userService;
@@ -54,10 +58,18 @@ public class SessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Session not found with ID: " + id));
     }
 
+    @Transactional
     public void deleteSession(String id) {
         if (!sessionRepository.existsById(id)) {
             throw new EntityNotFoundException("Session not found with ID: " + id);
         }
+        
+        Optional<Session> session = sessionRepository.findById(id);
+        
+        if(messageRepository.existsBySession(session.get())) {
+        	messageRepository.deleteBySession_Id(id);
+        }
+        
         sessionRepository.deleteById(id);
     }
 
