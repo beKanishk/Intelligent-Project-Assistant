@@ -2,8 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { List, Empty, Spin } from 'antd';
 import MessageBubble from './MessageBubble';
-import AILoadingIndicator from './AILoadingIndicator'; // Choose one
-// import SimpleLoadingIndicator from './SimpleLoadingIndicator'; // Or this one
+import AILoadingIndicator from './AILoadingIndicator';
 
 const ChatWindow = ({ sessionId, userId }) => {
   const { 
@@ -20,7 +19,7 @@ const ChatWindow = ({ sessionId, userId }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, aiProcessing]); // Scroll when processing state changes
+  }, [messages, aiProcessing]);
 
   if (messagesLoading) {
     return (
@@ -28,7 +27,8 @@ const ChatWindow = ({ sessionId, userId }) => {
         height: '100%',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#fafafa'
       }}>
         <Spin size="large" tip="Loading chat history..." />
       </div>
@@ -41,7 +41,8 @@ const ChatWindow = ({ sessionId, userId }) => {
         height: '100%',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#fafafa'
       }}>
         <Empty
           description="Start a conversation with your AI assistant"
@@ -55,21 +56,37 @@ const ChatWindow = ({ sessionId, userId }) => {
     <div style={{
       height: '100%',
       overflowY: 'auto',
-      padding: '16px'
+      padding: '16px 24px', // ✅ Better padding
+      backgroundColor: '#fafafa', // ✅ Light background like chat apps
+      display: 'flex',
+      flexDirection: 'column'
     }}>
-      <List
-        dataSource={messages}
-        renderItem={(message) => (
-          <List.Item style={{ border: 'none', padding: '8px 0' }}>
-            <MessageBubble message={message} />
-          </List.Item>
+      {/* ✅ Messages Container */}
+      <div style={{ flex: 1 }}>
+        <List
+          dataSource={messages}
+          renderItem={(message) => (
+            <List.Item 
+              style={{ 
+                border: 'none', 
+                padding: '4px 0',
+                backgroundColor: 'transparent'
+              }}
+            >
+              <MessageBubble message={message} />
+            </List.Item>
+          )}
+        />
+        
+        {/* ✅ Show loading indicator when AI is processing */}
+        {aiProcessing && (
+          <div style={{ padding: '16px 0' }}>
+            <AILoadingIndicator />
+          </div>
         )}
-      />
-      
-      {/* ✅ Show loading indicator when AI is processing */}
-      {aiProcessing && <AILoadingIndicator />}
-      
-      <div ref={messagesEndRef} />
+        
+        <div ref={messagesEndRef} />
+      </div>
     </div>
   );
 };

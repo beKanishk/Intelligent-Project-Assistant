@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Layout, ConfigProvider, Spin } from 'antd';
+import { Layout, ConfigProvider, App as AntdApp, Spin } from 'antd'; // ✅ Import App as AntdApp
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ChatPage from '../../pages/ChatPage';
 import AuthPage from '../../pages/AuthPage';
 import { getUser, logout } from '../../reduxStore/auth/Action';
 import 'antd/dist/reset.css';
 
-const App = () => {
+const AppContent = () => { // ✅ Extract main app logic to separate component
   const dispatch = useDispatch();
   const { isAuthenticated, token, user, loading } = useSelector(state => state.auth);
   const [verifying, setVerifying] = useState(true);
@@ -58,6 +58,27 @@ const App = () => {
   }
 
   return (
+    <Router>
+      <Routes>
+        <Route 
+          path="/login" 
+          element={!isAuthenticated ? <AuthPage /> : <Navigate to="/chat" replace />} 
+        />
+        <Route 
+          path="/chat" 
+          element={isAuthenticated && user ? <ChatPage /> : <Navigate to="/login" replace />} 
+        />
+        <Route 
+          path="/" 
+          element={<Navigate to={isAuthenticated && user ? "/chat" : "/login"} replace />} 
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+const App = () => {
+  return (
     <ConfigProvider
       theme={{
         token: {
@@ -66,22 +87,10 @@ const App = () => {
         },
       }}
     >
-      <Router>
-        <Routes>
-          <Route 
-            path="/login" 
-            element={!isAuthenticated ? <AuthPage /> : <Navigate to="/chat" replace />} 
-          />
-          <Route 
-            path="/chat" 
-            element={isAuthenticated && user ? <ChatPage /> : <Navigate to="/login" replace />} 
-          />
-          <Route 
-            path="/" 
-            element={<Navigate to={isAuthenticated && user ? "/chat" : "/login"} replace />} 
-          />
-        </Routes>
-      </Router>
+      {/* ✅ Wrap with AntdApp component to enable useApp() */}
+      <AntdApp>
+        <AppContent />
+      </AntdApp>
     </ConfigProvider>
   );
 };
