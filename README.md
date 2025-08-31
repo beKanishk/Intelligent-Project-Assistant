@@ -26,7 +26,8 @@ Spring Boot Backend (Java)
 ├── Session Management
 ├── User Authentication
 ├── API Gateway
-└── HITL Coordination
+├── HITL Coordination
+└── MySQL/PostgreSQL (User Data, Logs)
     ↓
 Python AI Backend (FastAPI)
 ├── Agent Orchestration
@@ -34,9 +35,8 @@ Python AI Backend (FastAPI)
 ├── Tool Execution
 └── Memory Management
     ↓
-Data Layer
-├── MongoDB (Sessions, Memory, Context)
-└── MySQL/PostgreSQL (User Data, Logs)
+MongoDB (Sessions, Memory, Context)
+
 ```
 
 🛡️ Human-in-the-Loop Safety System
