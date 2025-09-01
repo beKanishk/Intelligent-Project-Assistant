@@ -79,12 +79,12 @@ const ChatWindow = ({ sessionId, userId }) => {
         />
         
         {/* ✅ Show loading indicator when AI is processing */}
-        {aiProcessing && (
+        {/* {aiProcessing && (
           <div style={{ padding: '16px 0' }}>
             <AILoadingIndicator />
           </div>
         )}
-        
+         */}
         <div ref={messagesEndRef} />
       </div>
     </div>

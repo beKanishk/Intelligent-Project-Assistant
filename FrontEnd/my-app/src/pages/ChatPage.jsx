@@ -6,7 +6,7 @@ import ChatHeader from '@/components/layout/ChatHeader';
 import ChatWindow from '@/components/chat/ChatWindow';
 import QueryForm from '@/components/query/QueryForm';
 import DynamicInputForm from '@/components/chat/DynamicInputForm';
-import { loadMessages } from '@/reduxStore/message/Action';
+import { connectWebSocket, loadMessages } from '@/reduxStore/message/Action';
 import { initializeSession } from '@/reduxStore/session/Action';
 
 const { Content } = Layout;
@@ -25,6 +25,10 @@ const ChatPage = () => {
       dispatch(initializeSession());
     }
   }, [dispatch, sessionId]);
+
+ useEffect(() => {
+  dispatch(connectWebSocket());
+}, [dispatch]);
 
   // ✅ Load messages when sessionId changes
   useEffect(() => {

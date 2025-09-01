@@ -88,7 +88,7 @@ const QueryForm = () => {
             onKeyDown={handleKeyDown}
             placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
             autoSize={{ minRows: 1, maxRows: 4 }}
-            disabled={loading || aiProcessing}
+            // disabled={loading || aiProcessing}
           />
           <Button
             type="primary"
