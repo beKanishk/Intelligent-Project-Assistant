@@ -20,7 +20,7 @@ const AuthPage = () => {
     
     if (isLogin) {
       console.log('Attempting login...'); // Debug log
-      const result = await dispatch(login({ data: values, navigate })); // Add await here
+      const result = dispatch(login({ data: values, navigate })); // Add await here
       console.log('Login result:', result); // Debug log
       
       // The navigation is handled inside the login action, but you can add fallback
@@ -88,24 +88,16 @@ const AuthPage = () => {
           {!isLogin && (
             <>
               <Form.Item
-                name="firstName"
+                name="name"
                 rules={[{ required: true, message: 'Please input your first name!' }]}
               >
                 <Input
                   prefix={<UserOutlined />}
-                  placeholder="First Name"
+                  placeholder="Name"
                 />
               </Form.Item>
 
-              <Form.Item
-                name="lastName"
-                rules={[{ required: true, message: 'Please input your last name!' }]}
-              >
-                <Input
-                  prefix={<UserOutlined />}
-                  placeholder="Last Name"
-                />
-              </Form.Item>
+      
             </>
           )}
 

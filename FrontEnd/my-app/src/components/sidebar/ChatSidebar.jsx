@@ -28,7 +28,7 @@ import {
   createSession,
   renameSession 
 } from '@/reduxStore/session/Action';
-import { loadMessages } from '@/reduxStore/message/Action';
+import { loadMessages, subscribeToSession } from '@/reduxStore/message/Action';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -46,9 +46,9 @@ const ChatSidebar = ({ collapsed, onCollapse }) => {
     loading,
     sessionId: stateSessionId 
   } = useSelector(state => {
-    console.log('🔍 SELECTOR - Full session state:', state.session);
-    console.log('🔍 SELECTOR - Sessions array:', state.session.sessions);
-    console.log('🔍 SELECTOR - Sessions length:', state.session.sessions?.length);
+    // console.log('🔍 SELECTOR - Full session state:', state.session);
+    // console.log('🔍 SELECTOR - Sessions array:', state.session.sessions);
+    // console.log('🔍 SELECTOR - Sessions length:', state.session.sessions?.length);
     return state.session;
   });
 
@@ -234,6 +234,7 @@ const handleDeleteSession = (sessionId, sessionName) => {
       console.log('🔍 Switching to session:', key);
       dispatch(switchSession(key));
       dispatch(loadMessages(key));
+      // dispatch(subscribeToSession(key));
     }
   };
 

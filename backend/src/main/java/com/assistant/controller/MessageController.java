@@ -18,12 +18,18 @@ import com.assistant.service.MessageService;
 
 @RestController
 @RequestMapping("/api/message")
-@PreAuthorize("isAuthenticated()")
+
 public class MessageController {
 	@Autowired
 	private MessageService messageService;
-	
+
+    @GetMapping
+    private String response(){
+        return "Message Service";
+    }
+
 	@GetMapping("/history/{sessionId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Message>> getMessageHistoryByPath(
             @PathVariable String sessionId, 
             Principal principal) {

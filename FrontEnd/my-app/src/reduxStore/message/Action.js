@@ -10,33 +10,76 @@ import {
     WEBSOCKET_CONNECTED, WEBSOCKET_DISCONNECTED, WEBSOCKET_ERROR,
     SET_AI_PROCESSING
 } from "./ActionType";
+import { useSelector } from "react-redux";
 
 const baseURL = import.meta.env.VITE_BACKEND_URL;
-let stompClient = null;
+export let stompClient = null;
+
+let subscribedSessionId = null;
 
 // WebSocket Actions
 // Update this section in your connectWebSocket action
+// export const connectWebSocket = () => (dispatch, getState) => {
+//     const { auth } = getState();
+    
+//     if (stompClient && stompClient.connected) {
+//         return;
+//     }
+
+//     // Pass JWT token as query parameter
+//     // const socketUrl = `${baseURL}/ws?token=${auth.token}`;
+//     const socketUrl = `http://localhost:8085/ws?token=${auth.token}`;
+//     const socket = new SockJS(socketUrl);
+    
+//     stompClient = new Client({
+//         webSocketFactory: () => socket,
+//         // Remove the connectHeaders since they don't work for handshake
+//         // connectHeaders: {
+//         //     'Authorization': `Bearer ${auth.token}`
+//         // },
+//         debug: (str) => console.log('STOMP: ' + str),
+//         onConnect: () => {
+//             console.log('WebSocket Connected');
+//             dispatch({ type: WEBSOCKET_CONNECTED });
+//         },
+//         onDisconnect: () => {
+//             console.log('WebSocket Disconnected');
+//             dispatch({ type: WEBSOCKET_DISCONNECTED });
+//         },
+//         onStompError: (error) => {
+//             console.error('STOMP Error:', error);
+//             dispatch({ type: WEBSOCKET_ERROR, payload: error.body });
+//         }
+//     });
+
+//     stompClient.activate();
+// };
+
+
 export const connectWebSocket = () => (dispatch, getState) => {
     const { auth } = getState();
-    
-    if (stompClient && stompClient.connected) {
-        return;
+    const { session } = getState(); // safe here
+    const sessionId = session?.sessionId;
+
+    if (!sessionId) return;
+
+    if (stompClient) {
+        if (stompClient.connected) return;
+        if (stompClient.active) return; // already activating
     }
 
-    // Pass JWT token as query parameter
-    const socketUrl = `${baseURL}/ws?token=${auth.token}`;
+    const socketUrl = `http://localhost:8085/ws?token=${auth.token}`;
     const socket = new SockJS(socketUrl);
-    
+
     stompClient = new Client({
         webSocketFactory: () => socket,
-        // Remove the connectHeaders since they don't work for handshake
-        // connectHeaders: {
-        //     'Authorization': `Bearer ${auth.token}`
-        // },
         debug: (str) => console.log('STOMP: ' + str),
         onConnect: () => {
             console.log('WebSocket Connected');
             dispatch({ type: WEBSOCKET_CONNECTED });
+            if (sessionId) {
+                dispatch(subscribeToSession(sessionId));
+            }
         },
         onDisconnect: () => {
             console.log('WebSocket Disconnected');
@@ -49,13 +92,95 @@ export const connectWebSocket = () => (dispatch, getState) => {
     });
 
     stompClient.activate();
+
+    // Return a promise that resolves once connected
+    return new Promise((resolve) => {
+        const checkConnected = () => {
+            if (stompClient.connected) {
+                resolve();
+            } else {
+                setTimeout(checkConnected, 50);
+            }
+        };
+        checkConnected();
+    });
 };
 
 
 let currentSubscription = null;
 
-export const subscribeToSession = (sessionId) => (dispatch) => {
-    // ... existing connection logic ...
+// export const subscribeToSession = (sessionId) => (dispatch) => {
+//     // ... existing connection logic ...
+    
+//     currentSubscription = stompClient.subscribe(`/user/queue/session/${sessionId}`, (message) => {
+//         const messageData = JSON.parse(message.body);
+//         console.log('Received WebSocket message:', messageData);
+//         console.log('🔥 user_input_fields:', messageData.user_input_fields);
+//         console.log('🔥 paused:', messageData.paused);
+//         console.log('🔥 user_input_required:', messageData.user_input_required);
+        
+//         dispatch({ type: ADD_MESSAGE, payload: messageData });
+
+//         // ✅ Handle HITL with proper field names and skip metadata field
+//         if (messageData.paused && messageData.user_input_required && messageData.user_input_fields) {
+//             console.log('🔥 Processing user input fields...');
+            
+//             // ✅ Skip the first field (index 0) and normalize the rest
+//             const actualFields = messageData.user_input_fields.slice(1); // Skip metadata field
+            
+//             const normalizedFields = actualFields.map(field => {
+//                 console.log('🔍 Processing field:', field);
+//                 return {
+//                     fieldName: field.field_name,
+//                     fieldDescription: field.field_description || field.field_name, // fallback
+//                     fieldType: field.field_type,
+//                     required: field.required || false,
+//                     defaultValue: field.default_value || '',
+//                     options: field.options || [],
+//                     minLength: field.min_length,
+//                     maxLength: field.max_length,
+//                     minValue: field.min_value,
+//                     maxValue: field.max_value,
+//                     pattern: field.pattern,
+//                     placeholder: field.placeholder || '',
+//                 };
+//             });
+            
+//             console.log('🔥 Normalized fields:', normalizedFields);
+//             dispatch({ type: SET_USER_INPUT_FIELDS, payload: normalizedFields });
+//             dispatch({ type: SET_WAITING_FOR_INPUT, payload: true });
+//         } else if (messageData.needsConfirmation) {
+//             console.log('Agent requesting confirmation');
+//         }
+//     });
+// };
+
+
+
+export const subscribeToSession = (sessionId) => async (dispatch) => {
+    if (!stompClient) {
+        console.error('STOMP client not initialized');
+        return;
+    }
+
+    if (subscribedSessionId === sessionId) return;
+    // Wait until connected
+    if (!stompClient.connected) {
+        console.log('Waiting for WebSocket connection to subscribe...');
+        await new Promise((resolve) => {
+            const checkConnected = () => {
+                if (stompClient.connected) resolve();
+                else setTimeout(checkConnected, 50);
+            };
+            checkConnected();
+        });
+    }
+
+    if (currentSubscription) {
+        currentSubscription.unsubscribe();
+        currentSubscription = null;
+        subscribedSessionId = null;
+    }
 
     currentSubscription = stompClient.subscribe(`/user/queue/session/${sessionId}`, (message) => {
         const messageData = JSON.parse(message.body);
@@ -63,34 +188,27 @@ export const subscribeToSession = (sessionId) => (dispatch) => {
         console.log('🔥 user_input_fields:', messageData.user_input_fields);
         console.log('🔥 paused:', messageData.paused);
         console.log('🔥 user_input_required:', messageData.user_input_required);
-        
+
         dispatch({ type: ADD_MESSAGE, payload: messageData });
 
         // ✅ Handle HITL with proper field names and skip metadata field
         if (messageData.paused && messageData.user_input_required && messageData.user_input_fields) {
             console.log('🔥 Processing user input fields...');
-            
-            // ✅ Skip the first field (index 0) and normalize the rest
-            const actualFields = messageData.user_input_fields.slice(1); // Skip metadata field
-            
-            const normalizedFields = actualFields.map(field => {
-                console.log('🔍 Processing field:', field);
-                return {
-                    fieldName: field.field_name,
-                    fieldDescription: field.field_description || field.field_name, // fallback
-                    fieldType: field.field_type,
-                    required: field.required || false,
-                    defaultValue: field.default_value || '',
-                    options: field.options || [],
-                    minLength: field.min_length,
-                    maxLength: field.max_length,
-                    minValue: field.min_value,
-                    maxValue: field.max_value,
-                    pattern: field.pattern,
-                    placeholder: field.placeholder || '',
-                };
-            });
-            
+            const actualFields = messageData.user_input_fields.slice(1); // Skip metadata
+            const normalizedFields = actualFields.map(field => ({
+                fieldName: field.field_name,
+                fieldDescription: field.field_description || field.field_name,
+                fieldType: field.field_type,
+                required: field.required || false,
+                defaultValue: field.default_value || '',
+                options: field.options || [],
+                minLength: field.min_length,
+                maxLength: field.max_length,
+                minValue: field.min_value,
+                maxValue: field.max_value,
+                pattern: field.pattern,
+                placeholder: field.placeholder || '',
+            }));
             console.log('🔥 Normalized fields:', normalizedFields);
             dispatch({ type: SET_USER_INPUT_FIELDS, payload: normalizedFields });
             dispatch({ type: SET_WAITING_FOR_INPUT, payload: true });
@@ -98,17 +216,19 @@ export const subscribeToSession = (sessionId) => (dispatch) => {
             console.log('Agent requesting confirmation');
         }
     });
+    subscribedSessionId = sessionId;
 };
 
 
 
 
 
-
 export const disconnectWebSocket = () => (dispatch) => {
-    if (stompClient && stompClient.connected) {
+    if (stompClient) {
         stompClient.deactivate();
         stompClient = null;
+        currentSubscription = null;
+        subscribedSessionId = null;
         dispatch({ type: WEBSOCKET_DISCONNECTED });
     }
 };

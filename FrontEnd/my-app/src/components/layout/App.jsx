@@ -35,7 +35,7 @@ const AppContent = () => { // ✅ Extract main app logic to separate component
     };
 
     verifyUser();
-  }, [dispatch, token, user]);
+  }, [dispatch, token]);
 
   // Show loading spinner while verifying user
   if (verifying || loading) {

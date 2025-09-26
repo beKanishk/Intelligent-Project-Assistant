@@ -1,0 +1,11 @@
+{
+  "name": "hello-world-server",
+  "version": "1.0.0",
+  "description": "A basic Node.js server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

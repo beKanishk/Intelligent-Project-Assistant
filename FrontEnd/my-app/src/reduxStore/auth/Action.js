@@ -12,7 +12,13 @@ export const register = (userData) => async (dispatch) => {
     dispatch({ type: REGISTER_REQUEST });
 
     try {
-        const response = await axios.post(`${baseURL}/api/users/register`, userData, {
+        // const response = await axios.post(`${baseURL}/api/users/register`, userData, {
+        //     headers: { "Content-Type": "application/json" }
+        // });
+
+        console.log("User data: ", userData);
+        
+        const response = await axios.post(`${baseURL}/auth/register`, userData, {
             headers: { "Content-Type": "application/json" }
         });
 
@@ -34,17 +40,34 @@ export const login = (userData) => async (dispatch) => {
 
     try {
         console.log('Making login API call...');
-        const response = await axios.post(`${baseURL}/api/users/login`, userData.data);
-        const user = response.data;
+        // const response = await axios.post(`${baseURL}/api/users/login`, userData.data);
+        const response = await axios.post(`${baseURL}/auth/token`, userData.data);
+        let user = response.data;
         console.log('Login API response:', user);
         
-        if (user.token) {
-            dispatch({ type: LOGIN_SUCCESS, payload: user.token });
-            localStorage.setItem("token", user.token);
+        //This is for monolithic backend
+        // if (user.token) {
+        //     dispatch({ type: LOGIN_SUCCESS, payload: user.token });
+        //     localStorage.setItem("token", user.token);
+
+        //     // Try to get user profile, but don't block navigation if it fails
+        //     try {
+        //         await dispatch(getUser(user.token));
+        //     } catch (userError) {
+        //         console.warn("Failed to get user profile:", userError);
+        //     }
+        //     console.log('Navigating to /chat...');
+        //     userData.navigate("/chat");
+        //     return { success: true };
+        // }
+        if(user != null){
+            user = user.trim();
+            dispatch({ type: LOGIN_SUCCESS, payload: user });
+            localStorage.setItem("token", user);
 
             // Try to get user profile, but don't block navigation if it fails
             try {
-                await dispatch(getUser(user.token));
+                await dispatch(getUser(user));
             } catch (userError) {
                 console.warn("Failed to get user profile:", userError);
             }
@@ -66,7 +89,13 @@ export const getUser = (token) => async (dispatch) => {
     dispatch({ type: GET_USER_REQUEST });
 
     try {
-        const response = await axios.get(`${baseURL}/api/users/me`, {
+        // const response = await axios.get(`${baseURL}/api/users/me`, {
+        //     headers: {
+        //         Authorization: `Bearer ${token}`
+        //     }
+        // });
+
+        const response = await axios.get(`${baseURL}/user/me`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

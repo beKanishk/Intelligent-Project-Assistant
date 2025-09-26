@@ -16,6 +16,7 @@ import {
     RENAME_SESSION_SUCCESS,
     RENAME_SESSION_FAILURE
 } from "./ActionType";
+import { subscribeToSession } from "../message/Action";
 
 const baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -24,7 +25,8 @@ export const createSession = () => async (dispatch, getState) => {
     dispatch({ type: CREATE_SESSION_REQUEST });
 
     const { auth } = getState();
-    const token = auth.token;
+    let token = auth.token;
+    token = token.trim();
     console.log("Creating session with token:", token);
     
     try {
@@ -33,6 +35,8 @@ export const createSession = () => async (dispatch, getState) => {
                 Authorization: `Bearer ${token}`,
             }
         });
+
+        
 
         // ✅ Handle both string sessionId and object response
         const sessionData = typeof response.data === 'string' 
@@ -101,6 +105,7 @@ export const switchSession = (sessionId) => async (dispatch, getState) => {
             type: SWITCH_SESSION, 
             payload: sessionId 
         });
+        dispatch(subscribeToSession(sessionId));
         
         // ✅ Load messages for the switched session
         // You might want to dispatch loadMessages here

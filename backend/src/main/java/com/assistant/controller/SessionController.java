@@ -21,6 +21,11 @@ public class SessionController {
         this.sessionService = sessionService;
     }
 
+    @GetMapping
+    private String response(){
+        return "Seesion Service";
+    }
+
     @PostMapping
     public ResponseEntity<String> createSession(@RequestHeader("Authorization") String jwt) {
         String sessionId = sessionService.createSession(jwt);
