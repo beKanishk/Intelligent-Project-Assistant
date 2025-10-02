@@ -22,6 +22,8 @@ public class AiController {
     @PostMapping("/call-agent")
     public ResponseEntity<?> callAgent(@RequestBody MessageRequest msgRequest){
         try{
+
+
             AiResponse aiResponse = aiService.callAgent(msgRequest);
             return new ResponseEntity<>(aiResponse, HttpStatus.OK);
         } catch (Exception e) {

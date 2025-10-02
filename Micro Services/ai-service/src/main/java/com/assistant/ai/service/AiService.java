@@ -39,7 +39,7 @@ public class AiService {
             requestPayload.put("session_id", msgRequest.getSessionId());
 
             if (msgRequest.getTools() != null && !msgRequest.getTools().isEmpty()) {
-                requestPayload.put("preferred_tool", msgRequest.getTools());  // ✅ Correct field name
+                requestPayload.put("preferred_tool", msgRequest.getTools());
             }
 
             if (msgRequest.getSessionId() == null) {
